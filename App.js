@@ -1,12 +1,14 @@
 import {
   StyleSheet,
-  Text,
   View,
   TextInput,
   Button,
-  StatusBar,
+  FlatList,
 } from "react-native";
 import { useState } from "react";
+import uuid from 'react-native-uuid';
+import GoalItem from "./components/GoalItem";
+import GoalInput from "./components/GoalInput";
 
 const DUMMY_DATA = [];
 
@@ -21,12 +23,11 @@ export default function App() {
     if (input.length === 0) {
       return;
     }
-    setData((currentData) => [input, ...currentData]);
+    setData((currentData) => [{ text: input, id: uuid.v4() }, ...currentData]);
     setInput(() => "");
   };
   return (
     <View style={styles.appContainer}>
-      <StatusBar />
       <View style={styles.inputContainer}>
         <TextInput
           onChangeText={goalInputHandler}
@@ -37,10 +38,11 @@ export default function App() {
         <Button onPress={addGoalHandler} title="Add Goal" />
       </View>
       <View style={styles.goalsContainer}>
-        <Text>List of goals ...</Text>
-        {data.map((goal, id) => (
-          <Text key={id}>{goal}</Text>
-        ))}
+        <FlatList data={data} renderItem={(itemData) => {
+          return <GoalItem itemData={itemData} />
+        }} keyExtractor={(item, index) => {
+          return item.id;
+        }} />
       </View>
     </View>
   );
@@ -69,4 +71,5 @@ const styles = StyleSheet.create({
   goalsContainer: {
     flex: 5,
   },
+
 });
